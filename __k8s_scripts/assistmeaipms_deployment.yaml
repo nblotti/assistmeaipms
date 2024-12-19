@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: assistmeaipms
+  name: assistmeaipms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: assistmeaipms
+  template:
+    metadata:
+      labels:
+        app: assistmeaipms
+    spec:
+      containers:
+      - image: nblotti/assistmeaipms
+        name: chat
+        resources:
+          limits:
+            memory: 500Mi
+        volumeMounts:
+          - mountPath: /app/config
+            name: config-volume
+        ports:
+        - containerPort: 8080
+          name: http
+      volumes:
+        - configMap:
+            defaultMode: 420
+            name: assistme-config
+          name: config-volume
+      automountServiceAccountToken: false
+      restartPolicy: Always
+      imagePullSecrets:
+        - name: regcred
